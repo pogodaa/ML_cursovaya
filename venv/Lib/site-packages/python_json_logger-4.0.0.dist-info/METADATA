@@ -1,6 +1,6 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.4
 Name: python-json-logger
-Version: 3.3.0
+Version: 4.0.0
 Summary: JSON Log Formatter for the Python Logging Package
 Author-email: Zakaria Zajac <zak@madzak.com>, Nicholas Hairs <info+python-json-logger@nicholashairs.com>
 Maintainer-email: Nicholas Hairs <info+python-json-logger@nicholashairs.com>
@@ -45,6 +45,7 @@ Requires-Dist: mkdocstrings[python]; extra == "dev"
 Requires-Dist: mkdocs-gen-files; extra == "dev"
 Requires-Dist: mkdocs-literate-nav; extra == "dev"
 Requires-Dist: mike; extra == "dev"
+Dynamic: license-file
 
 [![PyPi](https://img.shields.io/pypi/v/python-json-logger.svg)](https://pypi.python.org/pypi/python-json-logger/)
 [![PyPI - Status](https://img.shields.io/pypi/status/python-json-logger)](https://pypi.python.org/pypi/python-json-logger/)
