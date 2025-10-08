@@ -1,1 +1,1 @@
-# ML_curcovaya
+# tgbot == @EnergyPredictorBot
