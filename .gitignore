@@ -17,3 +17,10 @@ Thumbs.db
 # Логи и временные файлы
 *.log
 *.tmp
+
+# Environment variables
+.env
+*.env
+
+# Конфиги с чувствительными данными
+config_secret.py
