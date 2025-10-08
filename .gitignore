@@ -1,3 +1,9 @@
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
 # Модели ML
 models/*.pkl
 *.pkl
