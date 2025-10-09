@@ -36,4 +36,4 @@ def check_config():
         print(f"❌ LightGBM модель не найдена ({model_path})")
         return []
 
-print("Конфигурация загружена. Токен:", BOT_TOKEN[:10] + "..." if BOT_TOKEN else "НЕ НАЙДЕН")
+print("Конфигурация загружена. Токен:", BOT_TOKEN[:5] + "..." if BOT_TOKEN else "НЕ НАЙДЕН")
