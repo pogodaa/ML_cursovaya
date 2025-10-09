@@ -4,9 +4,9 @@ env/
 .venv/
 ENV/
 
-# Модели ML
-models/*.pkl
-*.pkl
+# # Модели ML
+# models/*.pkl
+# *.pkl
 
 # Кэш Python
 __pycache__/
