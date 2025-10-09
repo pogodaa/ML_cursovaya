@@ -45,7 +45,6 @@
   "rolling_mean_24h",
   "rolling_mean_168h",
   "rolling_mean_7d_past",
-  "rolling_mean_3h_past",
   "kitchen_ratio",
   "laundry_ratio",
   "ac_heating_ratio",
@@ -55,5 +54,17 @@
   "hour",
   "day_of_week",
   "month",
-  "is_weekend"
+  "is_weekend",
+  "winter_evening_peak",
+  "summer_afternoon_ac",
+  "weekend_morning_kitchen",
+  "lag_24h_winter",
+  "lag_168h_weekend",
+  "extreme_evening_peak",
+  "sunday_evening_surge",
+  "deep_night_low",
+  "evening_ac_demand",
+  "morning_kitchen_demand",
+  "winter_evening_heating",
+  "summer_afternoon_cooling"
 ]
