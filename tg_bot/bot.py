@@ -90,23 +90,42 @@ class RealisticDataGenerator:
         date_str = target_date.strftime('%Y-%m-%d')
         
         # Используем реальные средние значения из EDA с небольшими вариациями
-        lag_2h = REAL_HOURLY_AVERAGES[(current_hour - 2) % 24] * np.random.uniform(0.95, 1.05)
-        lag_6h = REAL_HOURLY_AVERAGES[(current_hour - 6) % 24] * np.random.uniform(0.93, 1.07)
-        lag_12h = REAL_HOURLY_AVERAGES[(current_hour - 12) % 24] * np.random.uniform(0.90, 1.10)
-        
-        # Вчера в это же время - на основе реальных данных
+        # СООТВЕТСТВУЕМ ИМЕНАМ ПРИЗНАКОВ ИЗ feature_names.json
         lag_24h = REAL_HOURLY_AVERAGES[current_hour] * np.random.uniform(0.92, 1.08)
-        
-        # Неделю назад - с учетом дня недели
         lag_168h = REAL_HOURLY_AVERAGES[current_hour] * np.random.uniform(0.85, 1.15)
+        lag_48h = REAL_HOURLY_AVERAGES[(current_hour - 48) % 24] * np.random.uniform(0.90, 1.10)
+        lag_72h = REAL_HOURLY_AVERAGES[(current_hour - 72) % 24] * np.random.uniform(0.88, 1.12)
+        lag_96h = REAL_HOURLY_AVERAGES[(current_hour - 96) % 24] * np.random.uniform(0.85, 1.15)
         
-        return {
-            'lag_2h_ago': max(0.1, lag_2h),
-            'lag_6h_ago': max(0.1, lag_6h),
-            'lag_12h_ago': max(0.1, lag_12h),
+        # Базовые лаги
+        lags = {
             'lag_same_day_24h': max(0.1, lag_24h),
-            'lag_week_ago_168h': max(0.1, lag_168h)
+            'lag_week_ago_168h': max(0.1, lag_168h),
+            'lag_48h_ago': max(0.1, lag_48h),
+            'lag_72h_ago': max(0.1, lag_72h),
+            'lag_96h_ago': max(0.1, lag_96h)
         }
+        
+        # ПРИЗНАКИ ВЗАИМОДЕЙСТВИЯ - ВАЖНО!
+        # Создаем признаки взаимодействия лагов с временными периодами
+        is_morning_peak = 1 if 7 <= current_hour <= 9 else 0
+        is_evening_peak = 1 if 18 <= current_hour <= 22 else 0
+        is_night = 1 if 0 <= current_hour <= 5 else 0
+        is_weekend = 1 if target_date.weekday() >= 5 else 0
+        
+        # Взаимодействия лагов с временными периодами
+        lags['lag_24h_morning'] = lag_24h * is_morning_peak
+        lags['lag_24h_evening'] = lag_24h * is_evening_peak
+        lags['lag_24h_night'] = lag_24h * is_night
+        lags['lag_24h_weekend'] = lag_24h * is_weekend
+        
+        lags['lag_48h_morning'] = lag_48h * is_morning_peak
+        lags['lag_48h_evening'] = lag_48h * is_evening_peak
+        
+        lags['lag_week_morning'] = lag_168h * is_morning_peak
+        lags['lag_week_evening'] = lag_168h * is_evening_peak
+        
+        return lags
     
     def get_realistic_rolling_stats(self, hour, month):
         """Реалистичные скользящие статистики на основе EDA"""
@@ -114,19 +133,21 @@ class RealisticDataGenerator:
         recent_hours = [REAL_HOURLY_AVERAGES[(hour - i) % 24] for i in range(3)]
         rolling_3h = np.mean(recent_hours) * np.random.uniform(0.98, 1.02)
         
-        # 24-часовое среднее и std - из общих статистик EDA
+        # 24-часовое среднее - из общих статистик EDA
         all_hourly_values = list(REAL_HOURLY_AVERAGES.values())
-        rolling_24h_mean = np.mean(all_hourly_values) * self.get_seasonal_factor(month)
-        rolling_24h_std = np.std(all_hourly_values) * np.random.uniform(0.95, 1.05)
+        rolling_24h = np.mean(all_hourly_values) * self.get_seasonal_factor(month)
         
         # 7-дневное среднее
-        rolling_7d = rolling_24h_mean * np.random.uniform(0.99, 1.01)
+        rolling_7d = rolling_24h * np.random.uniform(0.99, 1.01)
+        
+        # 168-часовое среднее (неделя)
+        rolling_168h = rolling_24h * np.random.uniform(0.98, 1.02)
         
         return {
             'rolling_mean_3h_past': max(0.1, rolling_3h),
-            'rolling_mean_24h_past': max(0.1, rolling_24h_mean),
-            'rolling_std_24h_past': max(0.01, rolling_24h_std),
-            'rolling_mean_7d_past': max(0.1, rolling_7d)
+            'rolling_mean_24h': max(0.1, rolling_24h),
+            'rolling_mean_7d_past': max(0.1, rolling_7d),
+            'rolling_mean_168h': max(0.1, rolling_168h)
         }
     
     def get_realistic_submetering(self, hour, day_of_week, month):
@@ -255,7 +276,7 @@ def predict_for_date(target_date):
         
         # Прогнозируем
         prediction = model.predict(features_df)[0]
-        predictions.append(max(0.1, min(5.0, prediction)))
+        predictions.append(max(0.1, min(7.0, prediction)))
         
         print(f"  Час {hour:2d}: {predictions[-1]:.2f} кВт")
     
@@ -293,7 +314,7 @@ def create_comparison_plot(hours, predictions_tomorrow, predictions_day_after, d
     plt.grid(True, alpha=0.3)
     plt.legend()
     plt.xticks(range(0, 24, 2))
-    plt.ylim(bottom=0, top=3.5)
+    plt.ylim(bottom=0, top=8)
     
     # Добавляем аннотации для пиковых зон
     plt.text(2.5, 0.5, '', ha='center', va='center', 
@@ -302,13 +323,6 @@ def create_comparison_plot(hours, predictions_tomorrow, predictions_day_after, d
              fontsize=10, fontweight='bold', color='orange', alpha=0.7)
     plt.text(20, 0.5, '', ha='center', va='center', 
              fontsize=10, fontweight='bold', color='red', alpha=0.7)
-    
-    # Добавляем аннотацию о проблемах модели
-    plt.figtext(0.5, 0.01, 
-                "Модель переобучилась: ночное потребление завышено в 3 раза\n" +
-                "Это ЧЕСТНЫЙ результат - показывает реальные проблемы модели",
-                ha="center", fontsize=10, style="italic", 
-                bbox={"facecolor":"orange", "alpha":0.2, "pad":5})
     
     buf = io.BytesIO()
     plt.savefig(buf, format='png', dpi=100, bbox_inches='tight')
