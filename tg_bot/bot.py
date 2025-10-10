@@ -20,7 +20,7 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 # Загружаем модель и признаки
 try:
-    model = joblib.load('models/lightgbm_model.pkl')
+    model = joblib.load('models/lightgbm_best_model.pkl')
     with open('models/feature_names.json', 'r', encoding='utf-8') as f:
         FEATURE_NAMES = json.load(f)
     print(f"✅ Модель загружена. Ожидает {len(FEATURE_NAMES)} признаков")
