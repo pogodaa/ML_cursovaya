@@ -781,43 +781,6 @@ def console_diagnostic():
     print("   🎯 Запускаю бота для дальнейшего тестирования...")
     print("="*60)
 
-@bot.message_handler(commands=['test_difference'])
-def test_difference(message):
-    """Тест различий между днями"""
-    try:
-        # Прогноз на 3 разных дня
-        days = [
-            (datetime.now() + timedelta(days=1), "Завтра (будний)"),
-            (datetime.now() + timedelta(days=2), "Послезавтра (выходной)"), 
-            (datetime.now() + timedelta(days=3), "Через 2 дня (будний)")
-        ]
-        
-        result = "🔍 *ТЕСТ РАЗЛИЧИЙ МЕЖДУ ДНЯМИ*\n\n"
-        
-        for target_date, desc in days:
-            day_of_week = target_date.weekday()
-            month = target_date.month
-            
-            # Считаем среднее потребление за день
-            day_predictions = []
-            for hour in [3, 8, 14, 19]:  # Ночь, утро, день, вечер
-                features_df = create_realistic_features(hour, day_of_week, month, target_date)
-                prediction = model.predict(features_df)[0]
-                day_predictions.append(prediction)
-            
-            avg_consumption = np.mean(day_predictions)
-            
-            day_type = "ВЫХОДНОЙ" if day_of_week >= 5 else "БУДНИЙ"
-            result += f"*{desc}:* {avg_consumption:.2f} кВт ({day_type})\n"
-        
-        result += f"\n*ОЖИДАЕМО:* Будние ~1.0 кВт, Выходные ~1.3 кВт\n"
-        result += f"*ВЫВОД:* {'✅ РАЗЛИЧИЯ ЕСТЬ' if '1.3' in result else '❌ ПРОБЛЕМА'}"
-        
-        bot.send_message(message.chat.id, result, parse_mode='Markdown')
-        
-    except Exception as e:
-        bot.send_message(message.chat.id, f"❌ Ошибка: {str(e)}")
-
 
 
 # Добавь ПЕРЕД bot.infinity_polling():
