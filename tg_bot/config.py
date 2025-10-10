@@ -13,7 +13,7 @@ if not BOT_TOKEN:
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FEATURE_NAMES_PATH = os.path.join(BASE_DIR, 'models', 'feature_names.json')
 MODEL_PATHS = {
-    'lightgbm': os.path.join(BASE_DIR, 'models', 'lightgbm_model.pkl')
+    'lightgbm': os.path.join(BASE_DIR, 'models', 'lightgbm_best_model.pkl')
 }
 
 # Настройки бота
