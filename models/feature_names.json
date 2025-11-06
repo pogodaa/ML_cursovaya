@@ -38,18 +38,5 @@
   "evening_surge_17_18",
   "evening_drop_22_23",
   "peak_morning_7_9",
-  "peak_evening_18_22",
-  "lag_1h",
-  "lag_24h",
-  "lag_168h",
-  "rolling_mean_6h",
-  "rolling_mean_24h",
-  "rolling_std_24h",
-  "momentum_1h",
-  "acceleration_1h",
-  "volatility_ratio_24h",
-  "deviation_from_daily_norm",
-  "lag_1h_evening_boost",
-  "lag_24h_weekend_effect",
-  "momentum_evening_intensity"
+  "peak_evening_18_22"
 ]
